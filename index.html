@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d2b4e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MFilm">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src https://script.google.com https://*.googleusercontent.com; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<title>MFilm</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<style>
+:root{
+  --navy:#0d2b4e;--navy2:#143e6b;--teal:#0f8b8d;--teal2:#14b1a6;--sun:#f4a52c;
+  --bg:#eef2f7;--card:#fff;--ink:#16202c;--mut:#66748a;--line:rgba(20,40,70,.09);
+  --nav:64px;--r:20px;--sh:0 6px 22px rgba(13,43,78,.10);
+  --st:env(safe-area-inset-top);--sb:env(safe-area-inset-bottom);
+}
+@media (prefers-color-scheme:dark){:root{--bg:#0b121b;--card:#152130;--ink:#e8eef6;--mut:#93a3b8;--line:rgba(255,255,255,.08);--sh:0 6px 22px rgba(0,0,0,.35)}}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+/* pages from Google */
+.pg{position:fixed;left:0;right:0;top:var(--st);width:100%;height:calc(100% - var(--nav) - var(--sb) - var(--st));border:0;background:var(--bg);visibility:hidden}
+.pg.on{visibility:visible}
+#stbar{position:fixed;top:0;left:0;right:0;height:var(--st);background:var(--navy);z-index:5}
+
+/* app home */
+#home{position:fixed;left:0;right:0;top:0;bottom:calc(var(--nav) + var(--sb));overflow-y:auto;-webkit-overflow-scrolling:touch;display:none}
+#home.on{display:block}
+.hero{background:linear-gradient(140deg,var(--navy) 0%,var(--navy2) 55%,var(--teal) 130%);color:#fff;padding:calc(var(--st) + 22px) 20px 64px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-40px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(20,177,166,.45),transparent 70%)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.3px;font-size:15px;opacity:.95}
+.brand img{width:34px;height:34px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.hi{font-size:26px;font-weight:750;margin:20px 0 4px;letter-spacing:-.3px}
+.sub{font-size:14px;opacity:.82;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);padding:4px 10px;border-radius:30px;font-size:12.5px;font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:#7ee2a8;box-shadow:0 0 0 3px rgba(126,226,168,.25)}
+.dot.off{background:#ff8a80;box-shadow:0 0 0 3px rgba(255,138,128,.25)}
+.wrap{padding:0 16px 26px;margin-top:-44px;position:relative;z-index:1;max-width:620px;margin-left:auto;margin-right:auto}
+.main{display:flex;align-items:center;gap:14px;width:100%;border:0;text-align:left;background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+.main .ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--teal),var(--teal2));flex:none}
+.main .ic svg{width:28px;height:28px}
+.main b{display:block;font-size:17px}.main small{color:var(--mut);font-size:13px}
+.main .go{margin-left:auto;color:var(--mut)}
+h3{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin:24px 4px 10px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media (min-width:520px){.grid{grid-template-columns:repeat(3,1fr)}}
+.tile{border:0;background:var(--card);border-radius:18px;padding:16px 14px;text-align:left;box-shadow:var(--sh);display:flex;flex-direction:column;gap:12px;min-height:116px;transition:transform .12s}
+.tile:active,.main:active{transform:scale(.97)}
+.tile .ic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center}
+.tile b{font-size:15px;line-height:1.2}.tile small{display:block;color:var(--mut);font-size:12px;margin-top:3px;line-height:1.3;font-weight:400}
+.c1 .ic{background:rgba(15,139,141,.13);color:var(--teal)}
+.c2 .ic{background:rgba(20,62,107,.12);color:#2f6db3}
+.c3 .ic{background:rgba(244,165,44,.16);color:#c77a00}
+.c4 .ic{background:rgba(124,77,255,.13);color:#7c4dff}
+.c5 .ic{background:rgba(229,57,53,.12);color:#e53935}
+.c6 .ic{background:rgba(67,160,71,.14);color:#2e7d32}
+@media (prefers-color-scheme:dark){.c2 .ic{color:#7fb2ee}.c3 .ic{color:#f4b54f}.c4 .ic{color:#b39dff}.c5 .ic{color:#ff8a80}.c6 .ic{color:#81c784}}
+.tile.lock{opacity:.45}
+.tip{margin-top:22px;background:var(--card);border-radius:16px;padding:14px 16px;font-size:13px;color:var(--mut);line-height:1.5;box-shadow:var(--sh);display:flex;gap:10px}
+.tip b{color:var(--ink)}
+.ver{text-align:center;color:var(--mut);font-size:11.5px;margin-top:18px}
+
+/* bottom bar */
+nav{position:fixed;left:0;right:0;bottom:0;height:calc(var(--nav) + var(--sb));padding:6px 8px var(--sb);background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;gap:4px;z-index:6}
+nav button{flex:1;border:0;background:none;color:var(--mut);font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:14px;min-width:0;position:relative}
+nav button span.p{display:grid;place-items:center;width:52px;height:30px;border-radius:16px;transition:background .15s}
+nav button.on{color:var(--teal)}
+nav button.on span.p{background:rgba(15,139,141,.14)}
+nav button.busy span.p:after{content:"";position:absolute;top:6px;right:calc(50% - 22px);width:7px;height:7px;border-radius:50%;background:var(--sun);animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.25}}
+
+/* splash, sheets, offline */
+#splash{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#fff;background:linear-gradient(150deg,var(--navy),var(--navy2) 60%,var(--teal));transition:opacity .35s}
+#splash img{width:88px;height:88px;border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:pop .6s cubic-bezier(.2,1.4,.4,1)}
+#splash b{font-size:22px;letter-spacing:.4px}#splash small{opacity:.75;font-size:13px}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+#splash.out{opacity:0;pointer-events:none}
+#off{position:fixed;top:calc(var(--st) + 10px);left:50%;transform:translateX(-50%);background:#c62828;color:#fff;font-size:13px;font-weight:600;padding:8px 14px;border-radius:30px;z-index:9;display:none;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+#toast{position:fixed;left:50%;bottom:calc(var(--nav) + var(--sb) + 14px);transform:translate(-50%,20px);background:#1d2733;color:#fff;font-size:13.5px;padding:10px 16px;border-radius:12px;opacity:0;transition:.25s;z-index:9;pointer-events:none;max-width:90vw}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.sheet{position:fixed;inset:0;background:rgba(6,16,30,.55);display:none;align-items:flex-end;justify-content:center;z-index:12;backdrop-filter:blur(3px)}
+.sheet.on{display:flex}
+.card{background:var(--card);width:100%;max-width:480px;border-radius:26px 26px 0 0;padding:10px 18px calc(20px + var(--sb));max-height:90vh;overflow:auto;animation:up .28s cubic-bezier(.2,.9,.3,1)}
+@keyframes up{from{transform:translateY(40px);opacity:.4}}
+.card:before{content:"";display:block;width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 14px}
+@media (min-width:600px){.sheet{align-items:center}.card{border-radius:24px}}
+.card h2{font-size:21px;margin-bottom:4px}.card p{color:var(--mut);font-size:13.5px;line-height:1.45;margin-bottom:14px}
+.opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border:1.5px solid var(--line);background:none;border-radius:16px;padding:12px 14px;margin-bottom:9px}
+.opt .ic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none}
+.opt span{display:flex;flex-direction:column;font-weight:650;font-size:15px}.opt small{font-weight:400;color:var(--mut);font-size:12.5px;margin-top:2px}
+.opt.on{border-color:var(--teal);background:rgba(15,139,141,.06)}
+.opt.on:after{content:"✓";margin-left:auto;color:var(--teal);font-weight:800}
+.btn{width:100%;padding:13px;border-radius:14px;border:0;font-weight:700;background:rgba(127,140,160,.16);margin-top:4px}
+.hint{font-size:12.5px;color:var(--mut);line-height:1.5;margin:6px 2px 10px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="splash"><img src="icons/icon-192.png" alt=""><b>MFilm</b><small>Print count · Printers · Remote</small></div>
+<div id="stbar"></div>
+<div id="off">● Offline – waiting for network</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<main id="home" aria-label="MFilm home">
+  <section class="hero">
+    <div class="brand"><img src="icons/icon-192.png" alt="">MFilm Print Count</div>
+    <div class="hi" id="hi">Hello</div>
+    <div class="sub"><span id="today"></span><span class="chip" id="roleChip"></span><span class="chip"><i class="dot" id="netDot"></i><span id="netTxt">Online</span></span></div>
+  </section>
+  <div class="wrap">
+    <button class="main" id="mainBtn"></button>
+    <h3>Quick actions</h3>
+    <div class="grid" id="tiles"></div>
+    <div class="tip"><span>💡</span><span id="tipTxt"></span></div>
+    <div class="ver" id="ver"></div>
+  </div>
+</main>
+<div id="pages"></div>
+<nav id="nav" aria-label="MFilm"></nav>
+
+<div class="sheet" id="who" role="dialog" aria-modal="true" aria-labelledby="whoT">
+  <div class="card">
+    <h2 id="whoT">Welcome to MFilm 👋</h2>
+    <p>Who uses this phone? The app then opens straight on the right sign-in. You can change it any time in <b>More</b>.</p>
+    <div id="whoList"></div>
+  </div>
+</div>
+
+<div class="sheet" id="more" role="dialog" aria-modal="true" aria-labelledby="moreT">
+  <div class="card">
+    <h2 id="moreT">More</h2>
+    <p id="moreSub"></p>
+    <button class="opt" data-a="reload"><i class="ic c1" style="background:rgba(15,139,141,.13);color:var(--teal)">⟳</i><span>Refresh this page<small>Loads the newest data again</small></span></button>
+    <button class="opt" data-a="role"><i class="ic" style="background:rgba(20,62,107,.12)">👤</i><span>Change who uses this phone<small>Engineer · Technician · Supervisor · Admin · Director</small></span></button>
+    <button class="opt" data-a="install" id="instBtn" style="display:none"><i class="ic" style="background:rgba(67,160,71,.14)">⬇</i><span>Install on this phone<small>MFilm icon on the home screen</small></span></button>
+    <div class="hint" id="instHint"></div>
+    <button class="btn" data-a="close">Close</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ▼▼ Your MFilm web app link (Apps Script → Deploy → Manage deployments → Web app URL, ends with /exec) ▼▼ */
+const APP = 'https://script.google.com/macros/s/AKfycby0rBXzUoWQ1pmMsiOxDwNyQvranv6dV8_3qLIRLHpWftNm7YyZiMvAPQrSRPCtBOGV/exec';
+const VER = 'app v65';
+
+const I = {   // line icons
+  home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
+  pen:'<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/></svg>',
+  list:'<svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>',
+  prn:'<svg viewBox="0 0 24 24"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>',
+  plus:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>',
+  pc:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
+  chart:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  gear:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  crown:'<svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></svg>',
+  more:'<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>',
+  chat:'<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/></svg>',
+  go:'<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>'
+};
+/* page = MFilm page this tab opens (?page=…); do = what to open inside it */
+const T = {
+  newr:  { p:'entry', d:'new',    ic:'pen',   c:'c1', t:'New reading',  s:'SW + PRN counts' },
+  mine:  { p:'entry', d:'mine',   ic:'list',  c:'c2', t:'My entries',   s:'Last 60 days' },
+  myprn: { p:'entry', d:'prn',    ic:'prn',   c:'c3', t:'My printers',  s:'Add · edit details', need:'pe' },
+  addp:  { p:'entry', d:'add',    ic:'plus',  c:'c6', t:'Add printer',  s:'New printer + counts', need:'pa' },
+  rem:   { p:'entry', d:'remote', ic:'pc',    c:'c4', t:'Remote PCs',   s:'AnyDesk · UltraViewer', need:'rp' },
+  dash:  { p:'dashboard',         ic:'chart', c:'c5', t:'Dashboard',    s:'Prints, drops, stock' },
+  adm:   { p:'master',            ic:'gear',  c:'c2', t:'Admin panel',  s:'Masters, people, roles' },
+  tech:  { p:'master',            ic:'prn',   c:'c3', t:'Printers',     s:'Departments, backups' },
+  dir:   { p:'master',            ic:'crown', c:'c4', t:'Director',     s:'Owner view' },
+  msgs:  { p:'dashboard', d:'msg', ic:'chat', c:'c1', t:'Messages',     s:'Chats · follow-ups · reminders' }
+};
+const ROLES = {
+  engineer:  { e:'🛠', label:'Engineer',  sub:'Readings, my printers, remote PCs', pages:{entry:'engineer',dashboard:'dashboard'},
+               main:'newr', tiles:['msgs','mine','myprn','addp','rem','dash'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               tip:'Printer at site not in the list? Tap <b>Add printer</b> – type its ID and both print counts.' },
+  technician:{ e:'🔧', label:'Technician', sub:'Printers, departments, readings', pages:{master:'tech',entry:'user',dashboard:'dashboard'},
+               main:'tech', tiles:['msgs','newr','mine','myprn','rem','dash'], nav:[['master','prn','Printers'],['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               tip:'Switch a department to its <b>backup printer</b> in Printers – readings follow at once.' },
+  user:      { e:'🧑‍💼', label:'Supervisor', sub:'Readings and dashboard of my centers', pages:{entry:'user',dashboard:'dashboard'},
+               main:'dash', tiles:['msgs','newr','mine','myprn','rem'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               tip:'Tap a tab again to refresh it with the newest data.' },
+  admin:     { e:'🛡', label:'Admin', sub:'Every page – masters, people, roles', pages:{master:'admin',entry:'user',dashboard:'dashboard',home:''},
+               main:'dash', tiles:['msgs','adm','newr','myprn','rem','mine'], nav:[['dashboard','chart','Dashboard'],['entry','pen','Entry'],['master','gear','Admin']],
+               tip:'Admin → Mapping decides which centers each engineer sees.' },
+  director:  { e:'🏢', label:'Director', sub:'Owner view – dashboard and reports', pages:{dashboard:'dashboard',master:'director'},
+               main:'dash', tiles:['msgs','dir'], nav:[['dashboard','chart','Dashboard'],['master','crown','Director']],
+               tip:'The dashboard updates itself in the background every few minutes.' }
+};
+const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e){} } };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let role = store.get('mf_app_role'); if (!ROLES[role]) role = null;
+const frames = {}, inner = {}, queue = {};
+let cur = '', perms = {};
+const R = () => ROLES[role] || ROLES.user;
+
+function toast(t){ const x=$('toast'); x.textContent=t; x.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(()=>x.classList.remove('on'),2400); }
+
+/* ---- Google pages ---- */
+function urlFor(p){ const q = R().pages[p]; return q ? APP + '?page=' + encodeURIComponent(q) : APP; }
+function frame(p, reload){
+  let f = frames[p];
+  if (f && !reload) return f;
+  if (f) { f.remove(); delete inner[p]; }
+  f = document.createElement('iframe');
+  f.className = 'pg'; f.title = 'MFilm ' + p; f.allow = 'clipboard-write'; f.referrerPolicy = 'strict-origin-when-cross-origin';
+  f.onload = () => { const b = document.querySelector('#nav [data-p="'+p+'"]'); if (b) b.classList.remove('busy'); };
+  f.src = urlFor(p);
+  $('pages').appendChild(f); frames[p] = f;
+  const b = document.querySelector('#nav [data-p="'+p+'"]'); if (b) b.classList.add('busy');
+  return f;
+}
+function show(p, reload){
+  cur = p;
+  $('home').classList.toggle('on', p === 'apphome');
+  if (p !== 'apphome') frame(p, reload);
+  Object.keys(frames).forEach(k => frames[k].classList.toggle('on', k === p));
+  document.querySelectorAll('#nav button[data-p]').forEach(b => { const on = b.dataset.p === p; b.classList.toggle('on', on); on ? b.setAttribute('aria-current','page') : b.removeAttribute('aria-current'); });
+  store.set('mf_app_page', p);
+  try { history.replaceState(null, '', '#' + p); } catch(e){}
+}
+function act(k){
+  const t = T[k]; if (!t) return;
+  if (t.need && perms.entry && !perms[t.need]) { toast('Not switched on for your sign-in – ask your Admin'); return; }
+  if (!R().pages[t.p] && t.p !== 'entry') return;
+  show(t.p);
+  if (t.d) { if (inner[t.p]) send(t.p, t.d); else queue[t.p] = t.d; }
+}
+function send(p, d){ try { inner[p].postMessage({ mfilmDo: d }, '*'); } catch(e){} }
+
+/* ---- home ---- */
+function tileHtml(k, main){
+  const t = T[k], lock = t.need && perms.entry && !perms[t.need];
+  return main ? `<span class="ic">${I[t.ic]}</span><span><b>${t.t}</b><small>${t.s}</small></span><span class="go">${I.go}</span>`
+              : `<button class="tile ${t.c}${lock?' lock':''}" data-k="${k}"><span class="ic">${I[t.ic]}</span><span><b>${t.t}</b><small>${t.s}</small></span></button>`;
+}
+function drawHome(){
+  const h = new Date().getHours(), r = R();
+  $('hi').textContent = (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening') + ' ' + (h < 17 ? '☀️' : '🌙');
+  $('today').textContent = new Date().toLocaleDateString(undefined, { weekday:'long', day:'numeric', month:'short' });
+  $('roleChip').textContent = r.e + ' ' + r.label;
+  $('mainBtn').innerHTML = tileHtml(r.main, true); $('mainBtn').onclick = () => act(r.main);
+  $('tiles').innerHTML = r.tiles.map(k => tileHtml(k)).join('');
+  $('tiles').querySelectorAll('.tile').forEach(b => b.onclick = () => act(b.dataset.k));
+  $('tipTxt').innerHTML = r.tip;
+  $('ver').textContent = 'MFilm · ' + VER;
+}
+function drawNav(){
+  const r = R();
+  const b = (p, ic, t) => `<button type="button" data-p="${p}"><span class="p">${I[ic]}</span>${t}</button>`;
+  $('nav').innerHTML = b('apphome','home','Home') + r.nav.map(n => b(n[0], n[1], n[2])).join('') +
+    '<button type="button" id="mBtn"><span class="p">'+I.more+'</span>More</button>';
+  $('nav').querySelectorAll('button[data-p]').forEach(x => x.onclick = () => show(x.dataset.p, x.classList.contains('on') && x.dataset.p !== 'apphome'));   // tap again = refresh
+  $('mBtn').onclick = () => { $('moreSub').textContent = 'This phone: ' + r.label + ' · ' + VER; $('more').classList.add('on'); };
+}
+function start(){
+  Object.keys(frames).forEach(k => { frames[k].remove(); delete frames[k]; delete inner[k]; });
+  perms = {}; drawNav(); drawHome();
+  let first = (location.hash || '').slice(1);
+  const ok = p => p === 'apphome' || R().nav.some(n => n[0] === p);
+  if (!ok(first)) first = 'apphome';
+  show(first);
+  // load the main work page quietly so the first tap is instant (fast networks only – saves mobile data)
+  const c = navigator.connection || {};
+  if (!c.saveData && (!c.effectiveType || c.effectiveType === '4g')) setTimeout(() => frame(R().nav[0][0]), 900);
+}
+
+/* ---- who uses this phone ---- */
+function pickRole(){
+  $('more').classList.remove('on');
+  $('whoList').innerHTML = Object.keys(ROLES).map(k => { const r = ROLES[k];
+    return `<button class="opt${k===role?' on':''}" data-r="${k}"><i class="ic" style="background:rgba(15,139,141,.1);font-style:normal;font-size:22px">${r.e}</i><span>${r.label}<small>${r.sub}</small></span></button>`; }).join('');
+  $('whoList').querySelectorAll('button').forEach(b => b.onclick = () => { role = b.dataset.r; store.set('mf_app_role', role); $('who').classList.remove('on'); try{history.replaceState(null,'','#apphome');}catch(e){} start(); });
+  $('who').classList.add('on');
+}
+document.querySelectorAll('.sheet').forEach(s => s.addEventListener('click', e => { if (e.target === s && role) s.classList.remove('on'); }));
+$('more').addEventListener('click', e => { const a = (e.target.closest('[data-a]') || {}).dataset; if (!a) return;
+  if (a.a === 'close') $('more').classList.remove('on');
+  if (a.a === 'role') pickRole();
+  if (a.a === 'reload') { $('more').classList.remove('on'); if (cur && cur !== 'apphome') show(cur, true); else drawHome(); }
+  if (a.a === 'install') install(); });
+
+/* ---- messages from MFilm pages (only Google's Apps Script domains are listened to) ---- */
+const TRUSTED = /^https:\/\/([a-z0-9-]+\.)*(googleusercontent\.com|script\.google\.com)$/;
+function pageOf(src){ for (const k in frames) { let w = src; for (let i = 0; i < 4 && w; i++) { if (w === frames[k].contentWindow) return k; try { if (w === w.parent) break; w = w.parent; } catch(e){ break; } } } return ''; }
+window.addEventListener('message', e => {
+  if (!TRUSTED.test(e.origin || '')) return;
+  const d = e.data || {}, p = pageOf(e.source);
+  if (!p) return;                                         // not one of this app's pages
+  if (d.mfilmHello) { inner[p] = e.source; try { e.source.postMessage({ mfilmShell: 1 }, '*'); } catch(x){} if (queue[p]) { send(p, queue[p]); delete queue[p]; } return; }
+  if (d.mfilmMe && typeof d.mfilmMe === 'object') {         // only on/off flags arrive – never names or data
+    const m = d.mfilmMe; if (m.page === 'entry') { perms = m.on ? { entry: 1, rp: !!m.rp, pa: !!m.pa, pe: !!m.pe } : {}; drawHome(); } return; }
+  const g = d.mfilmGo;
+  if (['home','entry','dashboard','master'].includes(g)) {
+    if (g === 'home' && !R().pages.home) show('apphome'); else if (R().pages[g] !== undefined) show(g); else return;
+    try { e.source.postMessage({ mfilmAck: 1 }, '*'); } catch(x){}
+  }
+});
+
+/* ---- network ---- */
+function net(){ const on = navigator.onLine; $('off').style.display = on ? 'none' : 'block'; $('netDot').classList.toggle('off', !on); $('netTxt').textContent = on ? 'Online' : 'Offline'; }
+addEventListener('online', () => { net(); toast('Back online ✓'); });   // pages are not reloaded on their own – a half-typed entry is kept
+addEventListener('offline', net); net();
+
+/* ---- install ---- */
+let deferred = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('instBtn').style.display = ''; });
+async function install(){ if (!deferred) return; deferred.prompt(); try { await deferred.userChoice; } catch(e){} deferred = null; $('instBtn').style.display = 'none'; }
+(function(){
+  const st = matchMedia('(display-mode: standalone)').matches || navigator.standalone, ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  $('instHint').textContent = st ? '✓ Installed – MFilm runs as an app on this phone.' : ios ? 'iPhone: Share ⬆ → “Add to Home Screen”.' : 'Android: Chrome ⋮ → “Install app”.';
+})();
+if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+addEventListener('visibilitychange', () => { if (!document.hidden && cur === 'apphome') drawHome(); });
+
+if (role) start(); else { drawNav(); drawHome(); $('home').classList.add('on'); pickRole(); }
+setTimeout(() => $('splash').classList.add('out'), role ? 650 : 350);
+</script>
+</body>
+</html>
