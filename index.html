@@ -218,14 +218,35 @@ function frame(p, reload){
   if (f) { f.remove(); delete inner[p]; }
   f = document.createElement('iframe');
   f.className = 'pg'; f.title = 'MFilm ' + p; f.allow = 'clipboard-write'; f.referrerPolicy = 'strict-origin-when-cross-origin';
-  f.onload = () => { const b = document.querySelector('#nav [data-p="'+p+'"]'); if (b) b.classList.remove('busy'); };
+  f.onload = () => { const b = document.querySelector('#nav [data-p="'+p+'"]'); if (b) b.classList.remove('busy');
+    // A real MFilm page says hello at once. No hello = Google showed its own error page instead.
+    clearTimeout(f._w); f._w = setTimeout(() => { if (frames[p] === f && !inner[p]) loadFailed(p); }, 9000); };
   f.src = urlFor(p);
   $('pages').appendChild(f); frames[p] = f;
   const b = document.querySelector('#nav [data-p="'+p+'"]'); if (b) b.classList.add('busy');
   return f;
 }
+/* Google refused the page (old or private web app address, or several Google accounts in this browser) */
+function loadFailed(p){
+  let x = document.getElementById('pgerr');
+  if (!x) {
+    x = document.createElement('div'); x.id = 'pgerr'; x.setAttribute('role', 'alert');
+    x.style.cssText = 'position:fixed;left:0;right:0;top:var(--st);height:calc(100% - var(--nav) - var(--sb) - var(--st));background:var(--bg);z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:28px;box-sizing:border-box;text-align:center;font:15px/1.45 system-ui,sans-serif;color:var(--ink,#16212e)';
+    document.body.appendChild(x);
+  }
+  x.dataset.p = p;
+  x.innerHTML = '<b style="font-size:20px">MFilm could not open</b>' +
+    '<span>Google did not send the MFilm page. Try again, or open MFilm directly.</span>' +
+    '<button type="button" id="pgRetry" style="min-height:46px;padding:0 26px;border:0;border-radius:10px;background:#12355b;color:#fff;font:600 16px system-ui">Try again</button>' +
+    '<a id="pgDirect" target="_blank" rel="noopener" style="min-height:46px;display:inline-flex;align-items:center;padding:0 22px;border:1px solid #12355b;border-radius:10px;color:#12355b;font:600 16px system-ui;text-decoration:none">Open MFilm directly</a>' +
+    '<small style="max-width:420px;color:#4b5866">Admin: in Apps Script, Deploy &rarr; Manage deployments must show Execute as: Me, Who has access: Anyone, and the same Web app URL as this app. If this phone\'s browser has several Google accounts, sign out of the extra ones.</small>';
+  x.querySelector('#pgDirect').href = urlFor(p);
+  x.querySelector('#pgRetry').onclick = () => { x.remove(); show(p, true); };
+  x.hidden = cur !== p;
+}
 function show(p, reload){
   cur = p;
+  { const x = document.getElementById('pgerr'); if (x) x.hidden = x.dataset.p !== p || p === 'apphome'; }
   $('home').classList.toggle('on', p === 'apphome');
   if (p !== 'apphome') frame(p, reload);
   Object.keys(frames).forEach(k => frames[k].classList.toggle('on', k === p));
@@ -301,7 +322,7 @@ window.addEventListener('message', e => {
   if (!TRUSTED.test(e.origin || '')) return;
   const d = e.data || {}, p = pageOf(e.source);
   if (!p) return;                                         // not one of this app's pages
-  if (d.mfilmHello) { inner[p] = e.source; try { e.source.postMessage({ mfilmShell: 1 }, '*'); } catch(x){} if (queue[p]) { send(p, queue[p]); delete queue[p]; } return; }
+  if (d.mfilmHello) { inner[p] = e.source; { const x = document.getElementById('pgerr'); if (x && x.dataset.p === p) x.remove(); } try { e.source.postMessage({ mfilmShell: 1 }, '*'); } catch(x){} if (queue[p]) { send(p, queue[p]); delete queue[p]; } return; }
   if (d.mfilmMe && typeof d.mfilmMe === 'object') {         // only on/off flags arrive – never names or data
     const m = d.mfilmMe; if (m.page === 'entry') { perms = m.on ? { entry: 1, rp: !!m.rp, pa: !!m.pa, pe: !!m.pe } : {}; drawHome(); } return; }
   const g = d.mfilmGo;
