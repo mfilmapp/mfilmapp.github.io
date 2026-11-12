@@ -103,6 +103,41 @@ nav button.busy span.p:after{content:"";position:absolute;top:6px;right:calc(50%
 .opt.on:after{content:"✓";margin-left:auto;color:var(--teal);font-weight:800}
 .btn{width:100%;padding:13px;border-radius:14px;border:0;font-weight:700;background:rgba(127,140,160,.16);margin-top:4px}
 .hint{font-size:12.5px;color:var(--mut);line-height:1.5;margin:6px 2px 10px}
+
+/* v78: on computers and tablets in landscape the bar becomes a left menu (same look as MFilm in the browser) */
+nav .nb,nav .ns{display:none}
+@media (min-width:1024px){
+  :root{--side:236px}
+  nav{top:0;bottom:0;right:auto;width:var(--side);height:auto;flex-direction:column;gap:2px;padding:18px 12px calc(14px + var(--sb));background:linear-gradient(180deg,#0b1a30,#0a1628);border-top:0;border-right:1px solid rgba(255,255,255,.06);backdrop-filter:none;-webkit-backdrop-filter:none}
+  nav .nb{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;font-size:15px;padding:2px 8px 16px}
+  nav .nb img{width:30px;height:30px;border-radius:8px}
+  nav .nb small{font-weight:500;font-size:12px;color:rgba(255,255,255,.55);padding-left:9px;border-left:1px solid rgba(255,255,255,.2)}
+  nav .ns{display:flex;align-items:center;gap:10px;height:40px;margin:0 0 10px;padding:0 10px;border:1px solid rgba(255,255,255,.16);border-radius:9px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.8);font-size:13px;font-weight:500;flex:none}
+  nav .ns{white-space:nowrap}nav .ns:hover{background:rgba(255,255,255,.12);color:#fff}
+  nav .ns svg{width:18px;height:18px}nav .ns kbd{margin-left:auto;font:600 11px/1 system-ui;padding:3px 6px;border-radius:5px;border:1px solid rgba(255,255,255,.22)}
+  nav button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;height:44px;padding:0 12px;border-radius:9px;font-size:14px;font-weight:500;color:rgba(255,255,255,.78)}
+  nav button span.p{width:22px;height:22px;background:none!important;border-radius:0}
+  nav button span.p svg{width:19px;height:19px}
+  nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+  nav button.on{background:#0b7285;color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(11,114,133,.35)}
+  nav button.busy span.p:after{top:12px;right:auto;left:30px}
+  nav #mBtn{margin-top:auto}
+  .pg,#pgerr{left:var(--side)!important;width:calc(100% - var(--side))!important;height:calc(100% - var(--st))!important}
+  #home{left:var(--side);bottom:0}
+  #toast{left:calc(50% + var(--side)/2);bottom:24px}
+  #stbar{display:none}
+  /* home: light page header like the other MFilm pages */
+  .hero{background:transparent;color:var(--ink);padding:34px 32px 8px}
+  .hero:after,.brand{display:none}
+  .hi{margin-top:0;font-size:30px}
+  .sub{opacity:1;color:var(--mut)}
+  .chip{background:var(--card);border-color:var(--line);color:var(--ink)}
+  .wrap{margin-top:14px;max-width:none;padding:0 32px 32px}
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .main,.tile,.tip{border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 2px 6px rgba(16,24,40,.05);border:1px solid #dde3ea}
+  .tile{transition:box-shadow .18s,transform .18s}.tile:hover,.main:hover{box-shadow:0 8px 24px rgba(16,24,40,.10);transform:translateY(-1px)}
+}
+@media (min-width:1024px) and (prefers-color-scheme:dark){.main,.tile,.tip{border-color:var(--line)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -153,7 +188,7 @@ nav button.busy span.p:after{content:"";position:absolute;top:6px;right:calc(50%
 'use strict';
 /* ▼▼ Your MFilm web app link (Apps Script → Deploy → Manage deployments → Web app URL, ends with /exec) ▼▼ */
 const APP = 'https://script.google.com/macros/s/AKfycby0rBXzUoWQ1pmMsiOxDwNyQvranv6dV8_3qLIRLHpWftNm7YyZiMvAPQrSRPCtBOGV/exec';
-const VER = 'app v74';
+const VER = 'app v78';
 
 const I = {   // line icons
   home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
@@ -254,6 +289,13 @@ function show(p, reload){
   store.set('mf_app_page', p);
   try { history.replaceState(null, '', '#' + p); } catch(e){}
 }
+/* v78: "Search or jump to" opens inside the current MFilm page (the home screen uses the main work page) */
+function search(){
+  let p = cur && cur !== 'apphome' ? cur : (R().nav[0] || [])[0]; if (!p) return;
+  if (p !== cur) show(p);
+  if (inner[p]) send(p, 'search'); else queue[p] = 'search';
+}
+document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); search(); } });
 function act(k){
   const t = T[k]; if (!t) return;
   if (t.need && perms.entry && !perms[t.need]) { toast('Not switched on for your sign-in – ask your Admin'); return; }
@@ -283,9 +325,12 @@ function drawHome(){
 function drawNav(){
   const r = R();
   const b = (p, ic, t) => `<button type="button" data-p="${p}"><span class="p">${I[ic]}</span>${t}</button>`;
-  $('nav').innerHTML = b('apphome','home','Home') + r.nav.map(n => b(n[0], n[1], n[2])).join('') +
+  $('nav').innerHTML = '<div class="nb"><img src="icons/icon-192.png" alt="">MFilm<small>Print Count</small></div>' +
+    '<button type="button" class="ns" id="sBtn" aria-label="Search or jump to (Ctrl+K)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search…<kbd>Ctrl K</kbd></button>' +
+    b('apphome','home','Home') + r.nav.map(n => b(n[0], n[1], n[2])).join('') +
     '<button type="button" id="mBtn"><span class="p">'+I.more+'</span>More</button>';
   $('nav').querySelectorAll('button[data-p]').forEach(x => x.onclick = () => show(x.dataset.p, x.classList.contains('on') && x.dataset.p !== 'apphome'));   // tap again = refresh
+  $('sBtn').onclick = search;
   $('mBtn').onclick = () => { $('moreSub').textContent = 'This phone: ' + r.label + ' · ' + VER; $('more').classList.add('on'); };
 }
 function start(){
