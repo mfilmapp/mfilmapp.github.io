@@ -158,7 +158,7 @@ nav .nb,nav .ns{display:none}
 'use strict';
 /* ▼▼ Your MFilm web app link (Apps Script → Deploy → Manage deployments → Web app URL, ends with /exec) ▼▼ */
 const APP = 'https://script.google.com/macros/s/AKfycby0rBXzUoWQ1pmMsiOxDwNyQvranv6dV8_3qLIRLHpWftNm7YyZiMvAPQrSRPCtBOGV/exec';
-const VER = 'app v83';
+const VER = 'app v85';
 
 const I = {   // line icons
   home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
@@ -173,6 +173,7 @@ const I = {   // line icons
   more:'<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>',
   chat:'<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/></svg>',
   go:'<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
+  check:'<svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-4"/><rect x="6" y="3" width="13" height="18" rx="2"/></svg>',
   user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
   bus:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 10h16M8 21v-4M16 21v-4"/></svg>'
 };
@@ -188,23 +189,24 @@ const T = {
   tech:  { p:'master',            ic:'prn',   c:'c3', t:'Printers',     s:'Departments, backups' },
   dir:   { p:'master',            ic:'crown', c:'c4', t:'Director',     s:'Owner view' },
   msgs:  { p:'dashboard', d:'msg', ic:'chat', c:'c1', t:'Messages',     s:'Chats · follow-ups · reminders' },
-  bus:   { p:'dashboard', d:'bus',    ic:'bus',   c:'c5', t:'Buses & routes', s:'Routes · conductor · prices' }
+  bus:   { p:'dashboard', d:'bus',    ic:'bus',   c:'c5', t:'Find a bus',   s:'Call conductor · prices' },
+  tasks: { p:'dashboard', d:'tasks',  ic:'check', c:'c1', t:'My tasks',     s:'Done · not done today' }
 };
 const ROLES = {
   engineer:  { e:'🛠', label:'Engineer',  sub:'Readings, my printers, remote PCs', pages:{entry:'engineer',dashboard:'dashboard'},
-               main:'newr', tiles:['msgs','mine','myprn','addp','rem','dash','bus'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               main:'newr', tiles:['tasks','msgs','mine','myprn','addp','rem','dash','bus'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Printer at site not in the list? Tap <b>Add printer</b> – type its ID and both print counts.' },
   technician:{ e:'🔧', label:'Technician', sub:'Printers, departments, readings', pages:{master:'tech',entry:'user',dashboard:'dashboard'},
-               main:'tech', tiles:['msgs','newr','mine','myprn','rem','dash','bus'], nav:[['master','prn','Printers'],['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               main:'tech', tiles:['tasks','msgs','newr','mine','myprn','rem','dash','bus'], nav:[['master','prn','Printers'],['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Switch a department to its <b>backup printer</b> in Printers – readings follow at once.' },
   user:      { e:'🧑‍💼', label:'Supervisor', sub:'Readings and dashboard of my centers', pages:{entry:'user',dashboard:'dashboard'},
-               main:'dash', tiles:['msgs','newr','mine','myprn','rem','bus'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               main:'dash', tiles:['tasks','msgs','newr','mine','myprn','rem','bus'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Tap a tab again to refresh it with the newest data.' },
   admin:     { e:'🛡', label:'Admin', sub:'Every page – masters, people, roles', pages:{master:'admin',entry:'user',dashboard:'dashboard',home:''},
-               main:'dash', tiles:['msgs','adm','newr','myprn','rem','mine','bus'], nav:[['dashboard','chart','Dashboard'],['entry','pen','Entry'],['master','gear','Settings']],
+               main:'dash', tiles:['tasks','msgs','adm','newr','myprn','rem','mine','bus'], nav:[['dashboard','chart','Dashboard'],['entry','pen','Entry'],['master','gear','Settings']],
                tip:'Admin → Mapping decides which centers each engineer sees.' },
   director:  { e:'🏢', label:'Director', sub:'Owner view – dashboard and reports', pages:{dashboard:'dashboard',master:'director'},
-               main:'dash', tiles:['msgs','dir','bus'], nav:[['dashboard','chart','Dashboard'],['master','crown','Director']],
+               main:'dash', tiles:['tasks','msgs','dir','bus'], nav:[['dashboard','chart','Dashboard'],['master','crown','Director']],
                tip:'The dashboard updates itself in the background every few minutes.' }
 };
 const $ = id => document.getElementById(id);
