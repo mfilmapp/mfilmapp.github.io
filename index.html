@@ -104,40 +104,10 @@ nav button.busy span.p:after{content:"";position:absolute;top:6px;right:calc(50%
 .btn{width:100%;padding:13px;border-radius:14px;border:0;font-weight:700;background:rgba(127,140,160,.16);margin-top:4px}
 .hint{font-size:12.5px;color:var(--mut);line-height:1.5;margin:6px 2px 10px}
 
-/* v78: on computers and tablets in landscape the bar becomes a left menu (same look as MFilm in the browser) */
+/* v83: the bottom bar stays on every screen (phone and computer); on wide screens its buttons sit in the middle */
 nav .nb,nav .ns{display:none}
-@media (min-width:1024px){
-  :root{--side:236px}
-  nav{top:0;bottom:0;right:auto;width:var(--side);height:auto;flex-direction:column;gap:2px;padding:18px 12px calc(14px + var(--sb));background:linear-gradient(180deg,#0b1a30,#0a1628);border-top:0;border-right:1px solid rgba(255,255,255,.06);backdrop-filter:none;-webkit-backdrop-filter:none}
-  nav .nb{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;font-size:15px;padding:2px 8px 16px}
-  nav .nb img{width:30px;height:30px;border-radius:8px}
-  nav .nb small{font-weight:500;font-size:12px;color:rgba(255,255,255,.55);padding-left:9px;border-left:1px solid rgba(255,255,255,.2)}
-  nav .ns{display:flex;align-items:center;gap:10px;height:40px;margin:0 0 10px;padding:0 10px;border:1px solid rgba(255,255,255,.16);border-radius:9px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.8);font-size:13px;font-weight:500;flex:none}
-  nav .ns{white-space:nowrap}nav .ns:hover{background:rgba(255,255,255,.12);color:#fff}
-  nav .ns svg{width:18px;height:18px}nav .ns kbd{margin-left:auto;font:600 11px/1 system-ui;padding:3px 6px;border-radius:5px;border:1px solid rgba(255,255,255,.22)}
-  nav button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;height:44px;padding:0 12px;border-radius:9px;font-size:14px;font-weight:500;color:rgba(255,255,255,.78)}
-  nav button span.p{width:22px;height:22px;background:none!important;border-radius:0}
-  nav button span.p svg{width:19px;height:19px}
-  nav button:hover{background:rgba(255,255,255,.07);color:#fff}
-  nav button.on{background:#0b7285;color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(11,114,133,.35)}
-  nav button.busy span.p:after{top:12px;right:auto;left:30px}
-  nav #mBtn{margin-top:auto}
-  .pg,#pgerr{left:var(--side)!important;width:calc(100% - var(--side))!important;height:calc(100% - var(--st))!important}
-  #home{left:var(--side);bottom:0}
-  #toast{left:calc(50% + var(--side)/2);bottom:24px}
-  #stbar{display:none}
-  /* home: light page header like the other MFilm pages */
-  .hero{background:transparent;color:var(--ink);padding:34px 32px 8px}
-  .hero:after,.brand{display:none}
-  .hi{margin-top:0;font-size:30px}
-  .sub{opacity:1;color:var(--mut)}
-  .chip{background:var(--card);border-color:var(--line);color:var(--ink)}
-  .wrap{margin-top:14px;max-width:none;padding:0 32px 32px}
-  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .main,.tile,.tip{border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 2px 6px rgba(16,24,40,.05);border:1px solid #dde3ea}
-  .tile{transition:box-shadow .18s,transform .18s}.tile:hover,.main:hover{box-shadow:0 8px 24px rgba(16,24,40,.10);transform:translateY(-1px)}
+@media (min-width:1024px){nav{justify-content:center;gap:24px}nav button{flex:0 0 120px}}
 }
-@media (min-width:1024px) and (prefers-color-scheme:dark){.main,.tile,.tip{border-color:var(--line)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -167,14 +137,14 @@ nav .nb,nav .ns{display:none}
 <div class="sheet" id="who" role="dialog" aria-modal="true" aria-labelledby="whoT">
   <div class="card">
     <h2 id="whoT">Welcome to MFilm 👋</h2>
-    <p>Who uses this phone? The app then opens straight on the right sign-in. You can change it any time in <b>More</b>.</p>
+    <p>Who uses this phone? The app then opens straight on the right sign-in. You can change it any time in <b>Profile</b>.</p>
     <div id="whoList"></div>
   </div>
 </div>
 
 <div class="sheet" id="more" role="dialog" aria-modal="true" aria-labelledby="moreT">
   <div class="card">
-    <h2 id="moreT">More</h2>
+    <h2 id="moreT">Profile</h2>
     <p id="moreSub"></p>
     <button class="opt" data-a="reload"><i class="ic c1" style="background:rgba(15,139,141,.13);color:var(--teal)">⟳</i><span>Refresh this page<small>Loads the newest data again</small></span></button>
     <button class="opt" data-a="role"><i class="ic" style="background:rgba(20,62,107,.12)">👤</i><span>Change who uses this phone<small>Engineer · Technician · Supervisor · Admin · Director</small></span></button>
@@ -188,7 +158,7 @@ nav .nb,nav .ns{display:none}
 'use strict';
 /* ▼▼ Your MFilm web app link (Apps Script → Deploy → Manage deployments → Web app URL, ends with /exec) ▼▼ */
 const APP = 'https://script.google.com/macros/s/AKfycby0rBXzUoWQ1pmMsiOxDwNyQvranv6dV8_3qLIRLHpWftNm7YyZiMvAPQrSRPCtBOGV/exec';
-const VER = 'app v78';
+const VER = 'app v83';
 
 const I = {   // line icons
   home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
@@ -202,7 +172,9 @@ const I = {   // line icons
   crown:'<svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></svg>',
   more:'<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>',
   chat:'<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/></svg>',
-  go:'<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>'
+  go:'<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
+  user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
+  bus:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 10h16M8 21v-4M16 21v-4"/></svg>'
 };
 /* page = MFilm page this tab opens (?page=…); do = what to open inside it */
 const T = {
@@ -215,23 +187,24 @@ const T = {
   adm:   { p:'master',            ic:'gear',  c:'c2', t:'Admin panel',  s:'Masters, people, roles' },
   tech:  { p:'master',            ic:'prn',   c:'c3', t:'Printers',     s:'Departments, backups' },
   dir:   { p:'master',            ic:'crown', c:'c4', t:'Director',     s:'Owner view' },
-  msgs:  { p:'dashboard', d:'msg', ic:'chat', c:'c1', t:'Messages',     s:'Chats · follow-ups · reminders' }
+  msgs:  { p:'dashboard', d:'msg', ic:'chat', c:'c1', t:'Messages',     s:'Chats · follow-ups · reminders' },
+  bus:   { p:'dashboard', d:'bus',    ic:'bus',   c:'c5', t:'Buses & routes', s:'Routes · conductor · prices' }
 };
 const ROLES = {
   engineer:  { e:'🛠', label:'Engineer',  sub:'Readings, my printers, remote PCs', pages:{entry:'engineer',dashboard:'dashboard'},
-               main:'newr', tiles:['msgs','mine','myprn','addp','rem','dash'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               main:'newr', tiles:['msgs','mine','myprn','addp','rem','dash','bus'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Printer at site not in the list? Tap <b>Add printer</b> – type its ID and both print counts.' },
   technician:{ e:'🔧', label:'Technician', sub:'Printers, departments, readings', pages:{master:'tech',entry:'user',dashboard:'dashboard'},
-               main:'tech', tiles:['msgs','newr','mine','myprn','rem','dash'], nav:[['master','prn','Printers'],['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               main:'tech', tiles:['msgs','newr','mine','myprn','rem','dash','bus'], nav:[['master','prn','Printers'],['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Switch a department to its <b>backup printer</b> in Printers – readings follow at once.' },
   user:      { e:'🧑‍💼', label:'Supervisor', sub:'Readings and dashboard of my centers', pages:{entry:'user',dashboard:'dashboard'},
-               main:'dash', tiles:['msgs','newr','mine','myprn','rem'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               main:'dash', tiles:['msgs','newr','mine','myprn','rem','bus'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Tap a tab again to refresh it with the newest data.' },
   admin:     { e:'🛡', label:'Admin', sub:'Every page – masters, people, roles', pages:{master:'admin',entry:'user',dashboard:'dashboard',home:''},
-               main:'dash', tiles:['msgs','adm','newr','myprn','rem','mine'], nav:[['dashboard','chart','Dashboard'],['entry','pen','Entry'],['master','gear','Admin']],
+               main:'dash', tiles:['msgs','adm','newr','myprn','rem','mine','bus'], nav:[['dashboard','chart','Dashboard'],['entry','pen','Entry'],['master','gear','Settings']],
                tip:'Admin → Mapping decides which centers each engineer sees.' },
   director:  { e:'🏢', label:'Director', sub:'Owner view – dashboard and reports', pages:{dashboard:'dashboard',master:'director'},
-               main:'dash', tiles:['msgs','dir'], nav:[['dashboard','chart','Dashboard'],['master','crown','Director']],
+               main:'dash', tiles:['msgs','dir','bus'], nav:[['dashboard','chart','Dashboard'],['master','crown','Director']],
                tip:'The dashboard updates itself in the background every few minutes.' }
 };
 const $ = id => document.getElementById(id);
@@ -328,7 +301,7 @@ function drawNav(){
   $('nav').innerHTML = '<div class="nb"><img src="icons/icon-192.png" alt="">MFilm<small>Print Count</small></div>' +
     '<button type="button" class="ns" id="sBtn" aria-label="Search or jump to (Ctrl+K)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search…<kbd>Ctrl K</kbd></button>' +
     b('apphome','home','Home') + r.nav.map(n => b(n[0], n[1], n[2])).join('') +
-    '<button type="button" id="mBtn"><span class="p">'+I.more+'</span>More</button>';
+    '<button type="button" id="mBtn"><span class="p">'+I.user+'</span>Profile</button>';
   $('nav').querySelectorAll('button[data-p]').forEach(x => x.onclick = () => show(x.dataset.p, x.classList.contains('on') && x.dataset.p !== 'apphome'));   // tap again = refresh
   $('sBtn').onclick = search;
   $('mBtn').onclick = () => { $('moreSub').textContent = 'This phone: ' + r.label + ' · ' + VER; $('more').classList.add('on'); };
