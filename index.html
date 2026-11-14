@@ -158,7 +158,7 @@ nav .nb,nav .ns{display:none}
 'use strict';
 /* ▼▼ Your MFilm web app link (Apps Script → Deploy → Manage deployments → Web app URL, ends with /exec) ▼▼ */
 const APP = 'https://script.google.com/macros/s/AKfycby0rBXzUoWQ1pmMsiOxDwNyQvranv6dV8_3qLIRLHpWftNm7YyZiMvAPQrSRPCtBOGV/exec';
-const VER = 'app v85';
+const VER = 'app v90';
 
 const I = {   // line icons
   home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
@@ -175,7 +175,9 @@ const I = {   // line icons
   go:'<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
   check:'<svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-4"/><rect x="6" y="3" width="13" height="18" rx="2"/></svg>',
   user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
-  bus:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 10h16M8 21v-4M16 21v-4"/></svg>'
+  bus:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 10h16M8 21v-4M16 21v-4"/></svg>',
+  box:'<svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></svg>',
+  asset:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>'
 };
 /* page = MFilm page this tab opens (?page=…); do = what to open inside it */
 const T = {
@@ -190,23 +192,28 @@ const T = {
   dir:   { p:'master',            ic:'crown', c:'c4', t:'Director',     s:'Owner view' },
   msgs:  { p:'dashboard', d:'msg', ic:'chat', c:'c1', t:'Messages',     s:'Chats · follow-ups · reminders' },
   bus:   { p:'dashboard', d:'bus',    ic:'bus',   c:'c5', t:'Find a bus',   s:'Call conductor · prices' },
-  tasks: { p:'dashboard', d:'tasks',  ic:'check', c:'c1', t:'My tasks',     s:'Done · not done today' }
+  tasks: { p:'dashboard', d:'tasks',  ic:'check', c:'c1', t:'My tasks',     s:'Done · not done today' },
+  assets:{ p:'dashboard', d:'assets', ic:'asset', c:'c3', t:'Asset register', s:'Printers, PCs, stands …' },
+  stock: { p:'master',                ic:'box',   c:'c6', t:'Film & ink stock', s:'Opening · send · minimum' }
 };
 const ROLES = {
   engineer:  { e:'🛠', label:'Engineer',  sub:'Readings, my printers, remote PCs', pages:{entry:'engineer',dashboard:'dashboard'},
-               main:'newr', tiles:['tasks','msgs','mine','myprn','addp','rem','dash','bus'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               main:'newr', tiles:['tasks','msgs','mine','myprn','addp','rem','dash','bus','assets'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Printer at site not in the list? Tap <b>Add printer</b> – type its ID and both print counts.' },
   technician:{ e:'🔧', label:'Technician', sub:'Printers, departments, readings', pages:{master:'tech',entry:'user',dashboard:'dashboard'},
-               main:'tech', tiles:['tasks','msgs','newr','mine','myprn','rem','dash','bus'], nav:[['master','prn','Printers'],['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               main:'tech', tiles:['tasks','msgs','newr','mine','myprn','rem','dash','bus','assets'], nav:[['master','prn','Printers'],['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Switch a department to its <b>backup printer</b> in Printers – readings follow at once.' },
   user:      { e:'🧑‍💼', label:'Supervisor', sub:'Readings and dashboard of my centers', pages:{entry:'user',dashboard:'dashboard'},
-               main:'dash', tiles:['tasks','msgs','newr','mine','myprn','rem','bus'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+               main:'dash', tiles:['tasks','msgs','newr','mine','myprn','rem','bus','assets'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Tap a tab again to refresh it with the newest data.' },
   admin:     { e:'🛡', label:'Admin', sub:'Every page – masters, people, roles', pages:{master:'admin',entry:'user',dashboard:'dashboard',home:''},
-               main:'dash', tiles:['tasks','msgs','adm','newr','myprn','rem','mine','bus'], nav:[['dashboard','chart','Dashboard'],['entry','pen','Entry'],['master','gear','Settings']],
+               main:'dash', tiles:['tasks','msgs','adm','newr','myprn','rem','mine','bus','assets'], nav:[['dashboard','chart','Dashboard'],['entry','pen','Entry'],['master','gear','Settings']],
                tip:'Admin → Mapping decides which centers each engineer sees.' },
+  store:     { e:'📦', label:'Store keeper', sub:'Asset register, film & ink stock', pages:{dashboard:'dashboard',master:'master'},
+               main:'assets', tiles:['tasks','msgs','assets','stock','dash','bus'], nav:[['dashboard','chart','Dashboard'],['master','box','Stock']],
+               tip:'Add several mice or keyboards in one go – leave the serial no. empty and type how many.' },
   director:  { e:'🏢', label:'Director', sub:'Owner view – dashboard and reports', pages:{dashboard:'dashboard',master:'director'},
-               main:'dash', tiles:['tasks','msgs','dir','bus'], nav:[['dashboard','chart','Dashboard'],['master','crown','Director']],
+               main:'dash', tiles:['tasks','msgs','dir','bus','assets'], nav:[['dashboard','chart','Dashboard'],['master','crown','Director']],
                tip:'The dashboard updates itself in the background every few minutes.' }
 };
 const $ = id => document.getElementById(id);
