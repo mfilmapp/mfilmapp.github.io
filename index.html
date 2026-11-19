@@ -158,7 +158,8 @@ nav .nb,nav .ns{display:none}
 'use strict';
 /* ▼▼ Your MFilm web app link (Apps Script → Deploy → Manage deployments → Web app URL, ends with /exec) ▼▼ */
 const APP = 'https://script.google.com/macros/s/AKfycby0rBXzUoWQ1pmMsiOxDwNyQvranv6dV8_3qLIRLHpWftNm7YyZiMvAPQrSRPCtBOGV/exec';
-const VER = 'app v90';
+const VER = 'app v92';
+const isAdm = () => role === 'admin';   // v92: version shown only to Admin / Super Admin
 
 const I = {   // line icons
   home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
@@ -302,7 +303,7 @@ function drawHome(){
   $('tiles').innerHTML = r.tiles.map(k => tileHtml(k)).join('');
   $('tiles').querySelectorAll('.tile').forEach(b => b.onclick = () => act(b.dataset.k));
   $('tipTxt').innerHTML = r.tip;
-  $('ver').textContent = 'MFilm · ' + VER;
+  $('ver').textContent = isAdm() ? 'MFilm · ' + VER : 'MFilm Print Count';
 }
 function drawNav(){
   const r = R();
@@ -313,7 +314,7 @@ function drawNav(){
     '<button type="button" id="mBtn"><span class="p">'+I.user+'</span>Profile</button>';
   $('nav').querySelectorAll('button[data-p]').forEach(x => x.onclick = () => show(x.dataset.p, x.classList.contains('on') && x.dataset.p !== 'apphome'));   // tap again = refresh
   $('sBtn').onclick = search;
-  $('mBtn').onclick = () => { $('moreSub').textContent = 'This phone: ' + r.label + ' · ' + VER; $('more').classList.add('on'); };
+  $('mBtn').onclick = () => { $('moreSub').textContent = 'This phone: ' + r.label + (isAdm() ? ' · ' + VER : ''); $('more').classList.add('on'); };
 }
 function start(){
   Object.keys(frames).forEach(k => { frames[k].remove(); delete frames[k]; delete inner[k]; });
