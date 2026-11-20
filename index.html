@@ -109,6 +109,9 @@ nav .nb,nav .ns{display:none}
 @media (min-width:1024px){nav{justify-content:center;gap:24px}nav button{flex:0 0 120px}}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* v102: sign-in screen – full screen, no bottom bar */
+body.signin #nav,body.signin #home{display:none!important}
+body.signin .pg{top:var(--st)!important;height:calc(100% - var(--st))!important;bottom:0!important}
 </style>
 </head>
 <body>
@@ -147,7 +150,7 @@ nav .nb,nav .ns{display:none}
     <h2 id="moreT">Profile</h2>
     <p id="moreSub"></p>
     <button class="opt" data-a="reload"><i class="ic c1" style="background:rgba(15,139,141,.13);color:var(--teal)">⟳</i><span>Refresh this page<small>Loads the newest data again</small></span></button>
-    <button class="opt" data-a="role"><i class="ic" style="background:rgba(20,62,107,.12)">👤</i><span>Change who uses this phone<small>Engineer · Technician · Supervisor · Admin · Director</small></span></button>
+    <button class="opt" data-a="role"><i class="ic" style="background:rgba(20,62,107,.12)">👤</i><span>Sign out / switch user<small>Another person signs in on this phone</small></span></button>
     <button class="opt" data-a="install" id="instBtn" style="display:none"><i class="ic" style="background:rgba(67,160,71,.14)">⬇</i><span>Install on this phone<small>MFilm icon on the home screen</small></span></button>
     <div class="hint" id="instHint"></div>
     <button class="btn" data-a="close">Close</button>
@@ -158,7 +161,7 @@ nav .nb,nav .ns{display:none}
 'use strict';
 /* ▼▼ Your MFilm web app link (Apps Script → Deploy → Manage deployments → Web app URL, ends with /exec) ▼▼ */
 const APP = 'https://script.google.com/macros/s/AKfycby0rBXzUoWQ1pmMsiOxDwNyQvranv6dV8_3qLIRLHpWftNm7YyZiMvAPQrSRPCtBOGV/exec';
-const VER = 'app v92';
+const VER = 'app v102';
 const isAdm = () => role === 'admin';   // v92: version shown only to Admin / Super Admin
 
 const I = {   // line icons
@@ -225,6 +228,13 @@ let role = store.get('mf_app_role'); if (!ROLES[role]) role = null;
 const frames = {}, inner = {}, queue = {};
 let cur = '', perms = {};
 const R = () => ROLES[role] || ROLES.user;
+/* v102: no "who uses this phone" choice – the MFilm sign-in tells the app the role */
+const ROLE_OF = { superadmin:'admin', admin:'admin', director:'director', engineer:'engineer', technician:'technician', storekeeper:'store', supervisor:'user', viewer:'user' };
+function signInScreen(){ role = null; store.set('mf_app_role', ''); Object.keys(frames).forEach(k => { frames[k].remove(); delete frames[k]; delete inner[k]; });
+  document.body.classList.add('signin'); $('home').classList.remove('on'); cur = 'signin';
+  const f = document.createElement('iframe'); f.className = 'pg on'; f.title = 'MFilm sign-in'; f.allow = 'clipboard-write'; f.referrerPolicy = 'strict-origin-when-cross-origin';
+  f.onload = () => { clearTimeout(f._w); f._w = setTimeout(() => { if (frames.signin === f && !inner.signin) loadFailed('signin'); }, 9000); };
+  f.src = APP; $('pages').appendChild(f); frames.signin = f; }
 
 function toast(t){ const x=$('toast'); x.textContent=t; x.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(()=>x.classList.remove('on'),2400); }
 
@@ -339,7 +349,7 @@ function pickRole(){
 document.querySelectorAll('.sheet').forEach(s => s.addEventListener('click', e => { if (e.target === s && role) s.classList.remove('on'); }));
 $('more').addEventListener('click', e => { const a = (e.target.closest('[data-a]') || {}).dataset; if (!a) return;
   if (a.a === 'close') $('more').classList.remove('on');
-  if (a.a === 'role') pickRole();
+  if (a.a === 'role') { $('more').classList.remove('on'); Object.keys(inner).forEach(k => { try { inner[k].postMessage({ mfilmDo: 'signout' }, '*'); } catch(x){} }); setTimeout(signInScreen, 150); }
   if (a.a === 'reload') { $('more').classList.remove('on'); if (cur && cur !== 'apphome') show(cur, true); else drawHome(); }
   if (a.a === 'install') install(); });
 
@@ -352,7 +362,12 @@ window.addEventListener('message', e => {
   if (!p) return;                                         // not one of this app's pages
   if (d.mfilmHello) { inner[p] = e.source; { const x = document.getElementById('pgerr'); if (x && x.dataset.p === p) x.remove(); } try { e.source.postMessage({ mfilmShell: 1 }, '*'); } catch(x){} if (queue[p]) { send(p, queue[p]); delete queue[p]; } return; }
   if (d.mfilmMe && typeof d.mfilmMe === 'object') {         // only on/off flags arrive – never names or data
-    const m = d.mfilmMe; if (m.page === 'entry') { perms = m.on ? { entry: 1, rp: !!m.rp, pa: !!m.pa, pe: !!m.pe } : {}; drawHome(); } return; }
+    const m = d.mfilmMe;
+    if (m.page === 'home') { const r = m.on ? ROLE_OF[m.role] : null;
+      if (r && r !== role) { role = r; store.set('mf_app_role', r); document.body.classList.remove('signin'); try { history.replaceState(null, '', '#apphome'); } catch(x){} start(); toast('Signed in'); }
+      else if (!m.on && role && p !== 'signin') signInScreen();
+      return; }
+    if (m.page === 'entry') { perms = m.on ? { entry: 1, rp: !!m.rp, pa: !!m.pa, pe: !!m.pe } : {}; drawHome(); } return; }
   const g = d.mfilmGo;
   if (['home','entry','dashboard','master'].includes(g)) {
     if (g === 'home' && !R().pages.home) show('apphome'); else if (R().pages[g] !== undefined) show(g); else return;
@@ -376,7 +391,7 @@ async function install(){ if (!deferred) return; deferred.prompt(); try { await 
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 addEventListener('visibilitychange', () => { if (!document.hidden && cur === 'apphome') drawHome(); });
 
-if (role) start(); else { drawNav(); drawHome(); $('home').classList.add('on'); pickRole(); }
+if (role) start(); else signInScreen();
 setTimeout(() => $('splash').classList.add('out'), role ? 650 : 350);
 </script>
 </body>
