@@ -161,7 +161,7 @@ body.signin .pg{top:var(--st)!important;height:calc(100% - var(--st))!important;
 'use strict';
 /* ▼▼ Your MFilm web app link (Apps Script → Deploy → Manage deployments → Web app URL, ends with /exec) ▼▼ */
 const APP = 'https://script.google.com/macros/s/AKfycby0rBXzUoWQ1pmMsiOxDwNyQvranv6dV8_3qLIRLHpWftNm7YyZiMvAPQrSRPCtBOGV/exec';
-const VER = 'app v102';
+const VER = 'app v121';   // matches MFilm web app v121-Nov
 const isAdm = () => role === 'admin';   // v92: version shown only to Admin / Super Admin
 
 const I = {   // line icons
@@ -193,32 +193,33 @@ const T = {
   dash:  { p:'dashboard',         ic:'chart', c:'c5', t:'Dashboard',    s:'Prints, drops, stock' },
   adm:   { p:'master',            ic:'gear',  c:'c2', t:'Admin panel',  s:'Masters, people, roles' },
   tech:  { p:'master',            ic:'prn',   c:'c3', t:'Printers',     s:'Departments, backups' },
-  dir:   { p:'master',            ic:'crown', c:'c4', t:'Director',     s:'Owner view' },
+  dir:   { p:'master',            ic:'crown', c:'c4', t:'Master data',  s:'Groups, centers, printers – view' },
   msgs:  { p:'dashboard', d:'msg', ic:'chat', c:'c1', t:'Messages',     s:'Chats · follow-ups · reminders' },
   bus:   { p:'dashboard', d:'bus',    ic:'bus',   c:'c5', t:'Find a bus',   s:'Call conductor · prices' },
   tasks: { p:'dashboard', d:'tasks',  ic:'check', c:'c1', t:'My tasks',     s:'Done · not done today' },
   assets:{ p:'dashboard', d:'assets', ic:'asset', c:'c3', t:'Asset register', s:'Printers, PCs, stands …' },
-  stock: { p:'master',                ic:'box',   c:'c6', t:'Film & ink stock', s:'Opening · send · minimum' }
+  stock: { p:'master',                ic:'box',   c:'c6', t:'Film & ink stock', s:'Opening · send · minimum' },
+  sum:   { p:'dashboard', d:'summary', ic:'list', c:'c4', t:'Summary',      s:'Month view · month-end checklist' }
 };
 const ROLES = {
-  engineer:  { e:'🛠', label:'Engineer',  sub:'Readings, my printers, remote PCs', pages:{entry:'engineer',dashboard:'dashboard'},
+  engineer:  { e:'🛠', label:'Engineer',  sub:'Readings, my printers, remote PCs', pages:{entry:'entry',dashboard:'dashboard'},
                main:'newr', tiles:['tasks','msgs','mine','myprn','addp','rem','dash','bus','assets'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Printer at site not in the list? Tap <b>Add printer</b> – type its ID and both print counts.' },
-  technician:{ e:'🔧', label:'Technician', sub:'Printers, departments, readings', pages:{master:'tech',entry:'user',dashboard:'dashboard'},
+  technician:{ e:'🔧', label:'Technician', sub:'Printers, departments, readings', pages:{master:'master',entry:'entry',dashboard:'dashboard'},
                main:'tech', tiles:['tasks','msgs','newr','mine','myprn','rem','dash','bus','assets'], nav:[['master','prn','Printers'],['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Switch a department to its <b>backup printer</b> in Printers – readings follow at once.' },
-  user:      { e:'🧑‍💼', label:'Supervisor', sub:'Readings and dashboard of my centers', pages:{entry:'user',dashboard:'dashboard'},
-               main:'dash', tiles:['tasks','msgs','newr','mine','myprn','rem','bus','assets'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
+  user:      { e:'🧑‍💼', label:'Supervisor', sub:'Readings and dashboard of my centers', pages:{entry:'entry',dashboard:'dashboard'},
+               main:'dash', tiles:['tasks','msgs','sum','newr','mine','myprn','rem','bus','assets'], nav:[['entry','pen','Entry'],['dashboard','chart','Dashboard']],
                tip:'Tap a tab again to refresh it with the newest data.' },
-  admin:     { e:'🛡', label:'Admin', sub:'Every page – masters, people, roles', pages:{master:'admin',entry:'user',dashboard:'dashboard',home:''},
-               main:'dash', tiles:['tasks','msgs','adm','newr','myprn','rem','mine','bus','assets'], nav:[['dashboard','chart','Dashboard'],['entry','pen','Entry'],['master','gear','Settings']],
-               tip:'Admin → Mapping decides which centers each engineer sees.' },
+  admin:     { e:'🛡', label:'Admin', sub:'Every page – masters, people, settings', pages:{master:'master',entry:'entry',dashboard:'dashboard',home:'home'},
+               main:'dash', tiles:['tasks','msgs','sum','adm','newr','myprn','rem','mine','bus','assets'], nav:[['dashboard','chart','Dashboard'],['entry','pen','Entry'],['master','gear','Settings']],
+               tip:'Settings → Storage saver, Old data, System health and WhatsApp alerts are in the Admin panel.' },
   store:     { e:'📦', label:'Store keeper', sub:'Asset register, film & ink stock', pages:{dashboard:'dashboard',master:'master'},
                main:'assets', tiles:['tasks','msgs','assets','stock','dash','bus'], nav:[['dashboard','chart','Dashboard'],['master','box','Stock']],
                tip:'Add several mice or keyboards in one go – leave the serial no. empty and type how many.' },
-  director:  { e:'🏢', label:'Director', sub:'Owner view – dashboard and reports', pages:{dashboard:'dashboard',master:'director'},
-               main:'dash', tiles:['tasks','msgs','dir','bus','assets'], nav:[['dashboard','chart','Dashboard'],['master','crown','Director']],
-               tip:'The dashboard updates itself in the background every few minutes.' }
+  director:  { e:'🏢', label:'Director', sub:'Owner view – dashboard and reports', pages:{dashboard:'dashboard',master:'master'},
+               main:'dash', tiles:['tasks','msgs','sum','dir','bus','assets'], nav:[['dashboard','chart','Dashboard'],['master','crown','Master data']],
+               tip:'Summary shows the month view and the month-end checklist of every center.' }
 };
 const $ = id => document.getElementById(id);
 const store = { get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e){} } };

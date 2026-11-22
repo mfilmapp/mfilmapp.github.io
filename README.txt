@@ -1,8 +1,8 @@
-MFILM MOBILE APP (v64) – install MFilm on Android / iPhone like a normal app
+MFILM MOBILE APP (app v121 – for MFilm web app v121-Nov) – install MFilm on Android / iPhone like a normal app
 ==========================================================================
 What it is: a small app "shell" (this folder). It opens your MFilm Apps Script pages full-screen with a
-bottom bar (Entry / Dashboard / Printers / Admin), no Google banner, its own icon, and it remembers who
-uses the phone (Engineer, Technician, Supervisor, Admin, Director) so it opens straight on their sign-in.
+bottom bar (Entry / Dashboard / Master data / Settings), no Google banner and its own icon. Everybody signs in
+on the ONE MFilm sign-in page; the app then shows the tiles and tabs of that person's role by itself.
 All data stays live in your Google Sheet – nothing is stored in the app.
 
 STEP 1 – check the web app link (1 minute)
@@ -26,8 +26,8 @@ STEP 2b – allow the app address in MFilm (v69 security)
 STEP 3 – install on each phone
   Android (Chrome): open the app link → menu ⋮ → "Install app" / "Add to Home screen".
   iPhone (Safari):  open the app link → Share ⬆ → "Add to Home Screen".
-  First start: choose who uses the phone → sign in with the normal MFilm name + password.
-  Change later: bottom bar "⋯ More" → Change who uses this phone. Tap an open tab again to refresh it.
+  First start: sign in with the normal MFilm username (full name, mobile or e-mail) + password.
+  Another person on the same phone: Profile → Sign out / switch user. Tap an open tab again to refresh it.
 
 OPTIONAL – a real Android .apk / Play Store app
   pwabuilder.com → paste your app link from step 2 → Package for stores → Android → Download.
@@ -48,3 +48,15 @@ NEW IN APP v64 – NEW HOME SCREEN
     the app on/off switches (never names or data).
   UPDATE: replace index.html and sw.js on GitHub (Add file → Upload files → Commit). Phones pick it up
   on the next start.
+
+WHAT'S NEW IN APP v121 (matches MFilm web app v121-Nov)
+  - Works with the single sign-in of MFilm v120+: every tab now opens the real MFilm page
+    (Entry, Dashboard, Master data). Older app versions opened the sign-in page in every tab.
+  - New "Summary" tile (month view + month-end checklist) for Admin, Director and Supervisor.
+  - Director: "Master data" (view) instead of the old Director page; no Administration.
+  - Forgot password, Continue as <name>, Caps Lock warning – all from the MFilm sign-in page.
+  - Phones pick up the new app by themselves the next time it is opened online.
+
+UPDATE THE APP ON GITHUB (2 minutes)
+  github.com → your app repository → "Add file" → "Upload files" → drag index.html and sw.js from this
+  folder (replace the old ones) → Commit changes. After ~1 minute every phone gets app v121.
